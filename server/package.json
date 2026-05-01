@@ -1,0 +1,35 @@
+{
+  "name": "ai-ads-generator-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "test": "node --test \"src/**/*.test.js\"",
+    "debug:gemini": "node scripts/debug-gemini-api.mjs",
+    "debug:gemini:image-only": "node scripts/debug-gemini-api.mjs image-only"
+  },
+  "dependencies": {
+    "@google/genai": "^1.50.1",
+    "@neondatabase/serverless": "^1.1.0",
+    "@sentry/node": "^10.50.0",
+    "@supabase/supabase-js": "^2.105.1",
+    "axios": "^1.15.2",
+    "cloudinary": "^2.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.45.2",
+    "edge-tts": "^1.0.1",
+    "elevenlabs": "^1.50.1",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.4.1",
+    "nanoid": "^5.1.9",
+    "pdf-lib": "^1.17.1",
+    "replicate": "^0.32.0",
+    "sharp": "^0.34.5",
+    "stripe": "^22.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

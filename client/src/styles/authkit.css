@@ -1,0 +1,477 @@
+/* Auth UI — inspired by AuthKit; scoped to .authkit-page. Primary button uses .ak-btn to avoid clashing with global .btn */
+
+.authkit-page {
+  --ak-bg: #06060a;
+  --ak-surface: #0f0f17;
+  --ak-surface2: #14141e;
+  --ak-surface3: #1a1a26;
+  --ak-border: rgba(255, 255, 255, 0.06);
+  --ak-border-focus: rgba(168, 85, 247, 0.55);
+  --ak-accent: #a855f7;
+  --ak-accent-soft: #d8b4fe;
+  --ak-accent-glow: rgba(168, 85, 247, 0.28);
+  --ak-emerald: #10d48e;
+  --ak-rose: #f4607a;
+  --ak-amber: #f5a623;
+  --ak-text: #eeeef5;
+  --ak-text-muted: #8888aa;
+  --ak-text-dim: #44445a;
+  --ak-r: 12px;
+  --ak-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ak-t: 0.18s var(--ak-ease);
+
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  /* Match app body + home (hero) */
+  background: #000000;
+  color: var(--ak-text);
+  /* Inherits Poppins from body / font-sans on the shell */
+  overflow-x: hidden;
+}
+
+.authkit-page .ak-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+}
+
+.authkit-page .ak-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.authkit-page .ak-brand a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+.authkit-page .ak-brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(145deg, var(--ak-accent), #9b6aff);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 24px var(--ak-accent-glow);
+  font-size: 16px;
+}
+.authkit-page .ak-brand-name {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+/* Match site .glass: frosted panel over the same blurs as the home page */
+.authkit-page .ak-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 22px;
+  padding: 36px 32px 32px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04) inset, 0 25px 80px rgba(0, 0, 0, 0.45);
+  animation: ak-cardin 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@keyframes ak-cardin {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.authkit-page .ak-screen {
+  animation: ak-fade 0.3s var(--ak-ease) both;
+}
+@keyframes ak-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.authkit-page .ak-tabs {
+  display: flex;
+  background: var(--ak-surface2);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 3px;
+  margin-bottom: 26px;
+  border: 1px solid var(--ak-border);
+}
+.authkit-page .ak-tab {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ak-text-muted);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: var(--ak-t);
+  text-align: center;
+  text-decoration: none;
+}
+.authkit-page .ak-tab[aria-current='true'],
+.authkit-page .ak-tab.ak-active {
+  background: var(--ak-surface3);
+  color: var(--ak-text);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.authkit-page .ak-head h1 {
+  font-family: inherit;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin-bottom: 0;
+}
+.authkit-page .ak-head p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13.5px;
+  margin-top: 5px;
+  font-weight: 400;
+}
+.authkit-page .ak-head {
+  margin-bottom: 22px;
+}
+
+.authkit-page .ak-socials {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.authkit-page .ak-social {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid var(--ak-border);
+  border-radius: var(--ak-r);
+  background: var(--ak-surface2);
+  color: var(--ak-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--ak-t);
+}
+.authkit-page .ak-social:hover {
+  background: var(--ak-surface3);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.authkit-page .ak-social:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.authkit-page .ak-div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ak-text-dim);
+  font-size: 11.5px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin: 16px 0;
+}
+.authkit-page .ak-div::before,
+.authkit-page .ak-div::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--ak-border);
+}
+
+.authkit-page .ak-field {
+  margin-bottom: 14px;
+}
+.authkit-page .ak-field > label,
+.authkit-page .ak-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ak-text-muted);
+  margin-bottom: 6px;
+  letter-spacing: 0.1px;
+}
+.authkit-page .ak-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.authkit-page .ak-input-wrap {
+  position: relative;
+}
+.authkit-page .ak-ico {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ak-text-dim);
+  pointer-events: none;
+  display: flex;
+  transition: color var(--ak-t);
+}
+.authkit-page .ak-input-wrap:focus-within .ak-ico {
+  color: var(--ak-accent-soft);
+}
+.authkit-page .ak-input {
+  width: 100%;
+  padding: 11px 14px 11px 38px;
+  background: var(--ak-surface2);
+  border: 1px solid var(--ak-border);
+  border-radius: var(--ak-r);
+  color: var(--ak-text);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: var(--ak-t);
+  box-sizing: border-box;
+}
+.authkit-page .ak-input:focus {
+  border-color: var(--ak-border-focus);
+  box-shadow: 0 0 0 3px rgba(99, 120, 255, 0.15);
+}
+.authkit-page .ak-input::placeholder {
+  color: var(--ak-text-dim);
+}
+.authkit-page .ak-input.ak-err,
+.authkit-page .ak-input-wrap.ak-err .ak-input {
+  border-color: rgba(244, 96, 122, 0.5);
+}
+.authkit-page .ak-errmsg {
+  font-size: 12px;
+  color: var(--ak-rose);
+  margin-top: 5px;
+}
+.authkit-page .ak-pw {
+  padding-right: 40px;
+}
+.authkit-page .ak-eye {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--ak-text-dim);
+  cursor: pointer;
+  display: flex;
+  padding: 3px;
+  transition: color var(--ak-t);
+}
+.authkit-page .ak-eye:hover {
+  color: var(--ak-text-muted);
+}
+
+.authkit-page .ak-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  margin: 0;
+}
+.authkit-page .ak-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ak-accent);
+  cursor: pointer;
+}
+.authkit-page .ak-link {
+  color: #d8b4fe;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 13px;
+  transition: color var(--ak-t);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+.authkit-page .ak-link:hover {
+  color: #fff;
+}
+
+.authkit-page .ak-btn {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: var(--ak-r);
+  /* Align with app CTAs (e.g. purple → pink) */
+  background: linear-gradient(135deg, #9333ea 0%, #db2777 100%);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 4px 24px rgba(168, 85, 247, 0.35);
+  transition: var(--ak-t);
+  position: relative;
+  overflow: hidden;
+}
+.authkit-page .ak-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 36px rgba(219, 39, 119, 0.3);
+}
+.authkit-page .ak-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.authkit-page .ak-btn-secondary {
+  margin-top: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  box-shadow: none;
+}
+.authkit-page .ak-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+.authkit-page .ak-confirm-pending {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  background: rgba(88, 28, 135, 0.2);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: left;
+}
+.authkit-page .ak-confirm-pending p {
+  margin: 0 0 12px 0;
+}
+.authkit-page .ak-confirm-pending p:last-of-type {
+  margin-bottom: 0;
+}
+.authkit-page .ak-btn .ak-spin {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: ak-spin 0.7s linear infinite;
+  margin: 0 auto;
+}
+@keyframes ak-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.authkit-page .ak-foot {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 13.5px;
+  color: var(--ak-text-muted);
+}
+.authkit-page .ak-badges {
+  font-size: 12px;
+  color: var(--ak-text-dim);
+  text-align: center;
+  margin-top: 14px;
+  line-height: 1.7;
+}
+.authkit-page .ak-badges a,
+.authkit-page .ak-badges .ak-link {
+  font-size: 12px;
+}
+
+.authkit-page .ak-str {
+  margin-top: 6px;
+}
+.authkit-page .ak-str-bars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 3px;
+}
+.authkit-page .ak-str-bar {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--ak-surface3);
+  transition: background 0.3s;
+}
+.authkit-page .ak-str-lbl {
+  font-size: 11px;
+  color: var(--ak-text-dim);
+}
+
+/* Password strength: dynamic color set via [data-level] on the parent. */
+.authkit-page .ak-str[data-level="1"] .ak-str-bar.is-on,
+.authkit-page .ak-str[data-level="1"] .ak-str-lbl {
+  background: #f4607a;
+  color: #f4607a;
+}
+.authkit-page .ak-str[data-level="2"] .ak-str-bar.is-on,
+.authkit-page .ak-str[data-level="2"] .ak-str-lbl {
+  background: #f5a623;
+  color: #f5a623;
+}
+.authkit-page .ak-str[data-level="3"] .ak-str-bar.is-on,
+.authkit-page .ak-str[data-level="3"] .ak-str-lbl {
+  background: #6378ff;
+  color: #6378ff;
+}
+.authkit-page .ak-str[data-level="4"] .ak-str-bar.is-on,
+.authkit-page .ak-str[data-level="4"] .ak-str-lbl {
+  background: #10d48e;
+  color: #10d48e;
+}
+
+.authkit-page .ak-banner {
+  margin: 0 0 16px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(245, 166, 35, 0.35);
+  background: rgba(245, 166, 35, 0.08);
+  color: #e8c48a;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.authkit-page .ak-banner code {
+  font-size: 11px;
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .authkit-page .ak-card {
+    padding: 28px 20px 24px;
+  }
+  .authkit-page .ak-socials {
+    flex-direction: column;
+  }
+}
