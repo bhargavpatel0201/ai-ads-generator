@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/navbar'
 import Footer from './components/footer'
+import ProtectedRoute from './components/ProtectedRoute'
 import ScrollToHash from './components/ScrollToHash'
 const LandingPage = lazy(() => import('./pages/LandingPage'))
 const Generator = lazy(() => import('./pages/Generator'))
@@ -33,8 +34,22 @@ export default function App() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/create" element={<Generator />} />
-          <Route path="/generator" element={<Generator />} />
+          <Route
+            path="/create"
+            element={
+              <ProtectedRoute>
+                <Generator />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/generator"
+            element={
+              <ProtectedRoute>
+                <Generator />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/plans" element={<Plans />} />
           <Route path="/community" element={<Community />} />
           <Route path="/faq" element={<Faq />} />
