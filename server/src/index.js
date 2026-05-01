@@ -79,6 +79,17 @@ app.use(express.json({ limit: "1mb" }));
 
 app.use("/api/stripe", stripeRouter);
 
+/** Browsers often open .../api — there is no HTML app here, only JSON routes under /api/*. */
+app.get("/api", (_req, res) => {
+  res.json({
+    service: "ai-ads-generator-api",
+    prefix: "/api",
+    message:
+      "API base URL is correct. Use specific routes (e.g. POST /api/posts/generate). Frontend axios baseURL should be this origin + /api.",
+    health: "/api/health",
+  });
+});
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
