@@ -1,7 +1,36 @@
 import axios, { isAxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { isSupabaseConfigured, supabase } from './supabase'
 
-const API_URL = import.meta.env.VITE_API_URL || '/api'
+/**
+ * Paths in this file are like `/posts/generate`; the server mounts them at `/api/posts/...`.
+ * So baseURL must end with `/api`. If `VITE_API_URL` is only the origin (e.g.
+ * `https://ai-ads-api.onrender.com`), we append `/api` — otherwise POST hits
+ * `/posts/...` and Express returns "Cannot POST /posts/...".
+ */
+export function normalizeViteApiBaseUrl(raw: string | undefined): string {
+  const fallback = '/api'
+  if (!raw?.trim()) return fallback
+  const s = raw.trim()
+  if (s.startsWith('/')) {
+    const p = s.replace(/\/$/, '') || '/api'
+    return p
+  }
+  try {
+    const u = new URL(s)
+    const path = (u.pathname || '/').replace(/\/$/, '') || '/'
+    if (path === '/' || path === '') {
+      return `${u.origin}/api`
+    }
+    if (path.endsWith('/api')) {
+      return `${u.origin}${path}`
+    }
+    return s.replace(/\/$/, '')
+  } catch {
+    return fallback
+  }
+}
+
+const API_URL = normalizeViteApiBaseUrl(import.meta.env.VITE_API_URL)
 
 const api = axios.create({
   baseURL: API_URL,
@@ -12,7 +41,8 @@ export function describeApiTransportError(err: unknown): string | undefined {
   if (!isAxiosError(err)) return undefined
   const status = err.response?.status
   if (status === 405 || status === 404) {
-    const usingRelative = !import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL.startsWith('/')
+    const raw = import.meta.env.VITE_API_URL?.trim()
+    const usingRelative = !raw || raw.startsWith('/')
     if (usingRelative && typeof window !== 'undefined' && !window.location.hostname.match(/^(localhost|127\.0\.0\.1)$/)) {
       return `No API server on this domain (${status}). In Vercel → Environment Variables set VITE_API_URL to your Node backend base URL (must end with /api, e.g. https://your-api.onrender.com/api), then redeploy.`
     }
