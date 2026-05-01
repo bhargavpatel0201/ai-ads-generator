@@ -60,6 +60,13 @@ app.use(
     },
   })
 );
+app.get("/", (_req, res) => {
+  res.json({
+    service: "ai-ads-generator-api",
+    message: "API is up. Routes are under /api. Set VITE_API_URL to this host + /api.",
+    health: "/api/health",
+  });
+});
 app.use("/api/webhooks", webhooksRouter);
 
 app.post(
