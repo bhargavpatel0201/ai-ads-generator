@@ -4,6 +4,7 @@ import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, UserIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { safeNextPath } from '../lib/nav'
+import { getSiteOrigin } from '../lib/site-origin'
 import AuthShell from '../components/auth/AuthShell'
 import { isOAuthSectionVisible, signInWithOAuth } from '../components/auth/oauthSupabase'
 
@@ -74,7 +75,7 @@ export default function SignUp() {
 
     setSubmitting(true)
     try {
-      const origin = window.location.origin
+      const origin = getSiteOrigin()
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,

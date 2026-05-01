@@ -4,6 +4,7 @@ import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { safeNextPath } from '../lib/nav'
+import { getSiteOrigin } from '../lib/site-origin'
 import AuthShell from '../components/auth/AuthShell'
 import { isOAuthSectionVisible, signInWithOAuth } from '../components/auth/oauthSupabase'
 
@@ -71,7 +72,7 @@ export default function SignIn() {
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email: email.trim(),
-        options: { emailRedirectTo: `${window.location.origin}/` },
+        options: { emailRedirectTo: `${getSiteOrigin()}/` },
       })
       if (error) {
         toast.error(error.message)
@@ -135,7 +136,7 @@ export default function SignIn() {
     setSubmitting(true)
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(v, {
-        redirectTo: `${window.location.origin}/sign-in`,
+        redirectTo: `${getSiteOrigin()}/sign-in`,
       })
       if (error) {
         toast.error(error.message)

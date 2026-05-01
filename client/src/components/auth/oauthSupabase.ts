@@ -1,5 +1,6 @@
 import toast from 'react-hot-toast'
 import { isSupabaseConfigured, supabase } from '../../lib/supabase'
+import { getSiteOrigin } from '../../lib/site-origin'
 
 const providers = ['google', 'github', 'discord'] as const
 export type OAuthProvider = (typeof providers)[number]
@@ -49,7 +50,7 @@ export async function signInWithOAuth(p: string) {
     toast.error('Unknown provider')
     return
   }
-  const redirectTo = `${window.location.origin}/create`
+  const redirectTo = `${getSiteOrigin()}/create`
   const { error } = await supabase.auth.signInWithOAuth({
     provider: p,
     options: { redirectTo },
