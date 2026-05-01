@@ -24,6 +24,7 @@ import toast from 'react-hot-toast'
 import {
   autoClassifyTopic,
   createShareLink,
+  describeApiTransportError,
   exportLinkedInPostAsPdf,
   generateLinkedInPost,
   getUser,
@@ -49,6 +50,8 @@ const LINKEDIN_LIMIT = 3000
 const LINKEDIN_WARN = 2700
 
 function apiErrorMessage(err: unknown, fallback: string): string {
+  const transport = describeApiTransportError(err)
+  if (transport) return transport
   if (isAxiosError(err)) {
     const data = err.response?.data
     if (data && typeof data === 'object' && data !== null && 'error' in data) {

@@ -5,8 +5,11 @@ import { Toaster } from 'react-hot-toast'
 import { initSentry } from './lib/sentry'
 import { AuthProvider } from './contexts/AuthContext'
 import { isSupabaseConfigured } from './lib/supabase'
+import { redirectAuthHashFromLocalhostToConfiguredSite } from './lib/site-origin'
 import './index.css'
 import App from './App'
+
+redirectAuthHashFromLocalhostToConfiguredSite()
 
 initSentry()
 

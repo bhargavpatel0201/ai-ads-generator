@@ -1,4 +1,4 @@
-import axios, { type InternalAxiosRequestConfig } from 'axios'
+import axios, { isAxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { isSupabaseConfigured, supabase } from './supabase'
 
 const API_URL = import.meta.env.VITE_API_URL || '/api'
@@ -6,6 +6,22 @@ const API_URL = import.meta.env.VITE_API_URL || '/api'
 const api = axios.create({
   baseURL: API_URL,
 })
+
+/** Human hint when the browser hits the wrong host (e.g. Vercel static + relative /api). */
+export function describeApiTransportError(err: unknown): string | undefined {
+  if (!isAxiosError(err)) return undefined
+  const status = err.response?.status
+  if (status === 405 || status === 404) {
+    const usingRelative = !import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL.startsWith('/')
+    if (usingRelative && typeof window !== 'undefined' && !window.location.hostname.match(/^(localhost|127\.0\.0\.1)$/)) {
+      return `No API server on this domain (${status}). In Vercel → Environment Variables set VITE_API_URL to your Node backend base URL (must end with /api, e.g. https://your-api.onrender.com/api), then redeploy.`
+    }
+  }
+  if (status === 405) {
+    return 'Server returned 405 Method Not Allowed for this API route. Confirm your backend is the Express app and POST /api/posts/auto-classify is exposed.'
+  }
+  return undefined
+}
 
 /** Prefer access token; refresh the session if the access token is missing (e.g. just expired). */
 async function getValidAccessToken(): Promise<string | null> {
