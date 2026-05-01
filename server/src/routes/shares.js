@@ -14,6 +14,7 @@
 import express from "express";
 import { customAlphabet } from "nanoid";
 import { neon } from "@neondatabase/serverless";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -73,11 +74,11 @@ function publicBaseUrl(req) {
 }
 
 /**
- * POST /api/share
+ * POST /api/share (authenticated)
  * Body: { topic, post, imageUrl, originalImageUrl? }
  * Inserts a row and returns { id, url } for clients to share.
  */
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
   try {
     const sql = getSql();
     if (!sql) {

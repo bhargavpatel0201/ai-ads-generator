@@ -494,7 +494,7 @@ router.get("/formats", (_req, res) => {
  * Returns: { tone, style, reason } — Gemini's best pick of tone + image style for the topic.
  * One small Gemini call, ~$0.0001. Falls back to professional/Auto if the model is busy.
  */
-router.post("/auto-classify", async (req, res) => {
+router.post("/auto-classify", requireAuth, async (req, res) => {
   try {
     const { topic } = req.body;
     if (!topic || typeof topic !== "string") {
@@ -521,7 +521,7 @@ router.post("/auto-classify", async (req, res) => {
  * Body: { topic, post, imageUrl }  (imageUrl can be a `data:` URL, an HTTPS URL, or omitted)
  * Streams a single-page A4 PDF with the banner on top and the post body below.
  */
-router.post("/export-pdf", async (req, res) => {
+router.post("/export-pdf", requireAuth, async (req, res) => {
   try {
     const { topic, post, imageUrl } = req.body || {};
     if (!post || typeof post !== "string") {

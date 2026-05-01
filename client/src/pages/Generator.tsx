@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import {
   CopyIcon,
@@ -43,6 +43,7 @@ import {
   type HistoryEntry,
 } from '../lib/local-history'
 import { useAuth } from '../contexts/AuthContext'
+import { safeNextPath } from '../lib/nav'
 
 const REPLICATE_BILLING_URL = 'https://replicate.com/account/billing'
 /** Hard LinkedIn post-body limit. Warn earlier so people leave room for hashtags. */
@@ -182,7 +183,23 @@ export default function Generator() {
   const [debugOpen, setDebugOpen] = useState(false)
 
   const { user, loading: authLoading } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [me, setMe] = useState<CurrentUser | null>(null)
+
+  function requireSignedIn(): boolean {
+    if (authLoading) {
+      toast.error('Still loading your session…')
+      return false
+    }
+    if (!user) {
+      const next = safeNextPath(`${location.pathname}${location.search}`)
+      toast.error('Sign in to use this.')
+      navigate(`/sign-in?next=${encodeURIComponent(next)}`)
+      return false
+    }
+    return true
+  }
 
   const formRef = useRef<HTMLDivElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -282,6 +299,7 @@ export default function Generator() {
       toast.error('Add a topic for your post.')
       return
     }
+    if (!requireSignedIn()) return
 
     const loadingId = toast.loading(
       'Writing 3 variants with Gemini, drawing with Replicate, then adding topic text on the image…'
@@ -361,6 +379,7 @@ export default function Generator() {
       toast.error('Pick a topic first.')
       return
     }
+    if (!requireSignedIn()) return
     const loadingId = toast.loading('Regenerating image only — keeping the post text…')
     setImageLoading(true)
     imageAbortRef.current?.abort()
@@ -401,6 +420,7 @@ export default function Generator() {
       toast.error('Type or pick a topic first — autopick reads the topic.')
       return
     }
+    if (!requireSignedIn()) return
     setClassifying(true)
     const loadingId = toast.loading('Asking Gemini to pick the best tone + style…')
     try {
@@ -690,6 +710,7 @@ export default function Generator() {
       toast.error('Generate a post first.')
       return
     }
+    if (!requireSignedIn()) return
     const stableImage = shareUrl || originalImageUrl
     if (!stableImage || !/^https?:\/\//i.test(stableImage)) {
       toast.error(
@@ -727,6 +748,7 @@ export default function Generator() {
       toast.error('Generate a post first.')
       return
     }
+    if (!requireSignedIn()) return
     setPdfDownloading(true)
     const loadingId = toast.loading('Building PDF…')
     try {
