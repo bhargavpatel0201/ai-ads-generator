@@ -26,24 +26,38 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const isProd = process.env.NODE_ENV === "production";
-const devClientOrigins = new Set(
-  [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    process.env.CLIENT_URL,
-  ].filter(Boolean)
-);
 const localhostDev = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/;
+
+/** Comma-separated CLIENT_URL values (e.g. prod + local) are all allowed. */
+function parseClientOrigins() {
+  const raw = String(process.env.CLIENT_URL || "").trim();
+  if (!raw) return ["http://localhost:5173"];
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+const configuredOrigins = new Set(parseClientOrigins());
+
 app.use(
   cors({
-    origin: isProd
-      ? (process.env.CLIENT_URL || "http://localhost:5173")
-      : (origin, cb) => {
-          if (!origin) return cb(null, true);
-          if (devClientOrigins.has(origin)) return cb(null, true);
-          if (localhostDev.test(origin)) return cb(null, true);
-          return cb(null, false);
-        },
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      if (configuredOrigins.has(origin)) return cb(null, true);
+      // Local Vite dev when CLIENT_URL points only at production
+      if (!isProd && localhostDev.test(origin)) return cb(null, true);
+      // Optional: allow any *.vercel.app preview (set CORS_ALLOW_VERCEL=1 on the API host)
+      if (process.env.CORS_ALLOW_VERCEL === "1") {
+        try {
+          const host = new URL(origin).hostname;
+          if (host.endsWith(".vercel.app")) return cb(null, true);
+        } catch {
+          /* ignore */
+        }
+      }
+      return cb(null, false);
+    },
   })
 );
 app.use("/api/webhooks", webhooksRouter);

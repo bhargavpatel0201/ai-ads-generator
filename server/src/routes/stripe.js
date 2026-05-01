@@ -9,7 +9,18 @@ import { nextMonthBoundary } from "../lib/plan-quota.js";
 
 const router = express.Router();
 
-const CLIENT = () => process.env.CLIENT_URL || "http://localhost:5173";
+/** First origin from comma-separated CLIENT_URL (used for Stripe redirect URLs). */
+function primaryClientOrigin() {
+  const raw = String(process.env.CLIENT_URL || "").trim();
+  if (!raw) return "http://localhost:5173";
+  const first = raw
+    .split(",")
+    .map((s) => s.trim())
+    .find(Boolean);
+  return first || "http://localhost:5173";
+}
+
+const CLIENT = () => primaryClientOrigin();
 
 /**
  * Must be mounted in index.js *before* express.json(), with:
