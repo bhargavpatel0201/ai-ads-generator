@@ -1,0 +1,21 @@
+# Render Blueprint: free Node API for this monorepo.
+# After push: Dashboard → New → Blueprint → select this repo → apply.
+# Then open the web service → Environment → add every secret from your local server/.env
+# (DATABASE_URL, SUPABASE_*, GEMINI / GOOGLE_GEMINI_API_KEY, STRIPE_*, CLIENT_URL, …).
+#
+# Vercel: set VITE_API_URL=https://<this-service-name>.onrender.com/api and redeploy.
+
+services:
+  - type: web
+    name: ai-ads-api
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
