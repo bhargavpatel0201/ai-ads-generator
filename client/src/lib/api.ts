@@ -229,6 +229,19 @@ export async function getUser(): Promise<CurrentUser> {
   return res.data
 }
 
+export interface DeleteAccountResponse {
+  ok: boolean
+  stripeCanceled?: boolean
+  /** Requires `SUPABASE_SERVICE_ROLE_KEY` on the API server. */
+  authRemoved?: boolean
+}
+
+/** Remove Neon profile, cancel Stripe sub when configured, optionally delete Supabase Auth user (service role). */
+export async function deleteAccount(): Promise<DeleteAccountResponse> {
+  const res = await api.delete<DeleteAccountResponse>('/users/me')
+  return res.data
+}
+
 export async function createCheckoutSession(
   plan: 'pro' | 'premium'
 ): Promise<{ url: string }> {

@@ -7,11 +7,13 @@ import {
   FileTextIcon,
   Loader2Icon,
   LogOutIcon,
+  Trash2Icon,
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import {
   createBillingPortalSession,
+  deleteAccount,
   getUser,
   listInvoices,
   type CurrentUser,
@@ -61,6 +63,10 @@ export default function Account() {
   const [hasStripeCustomer, setHasStripeCustomer] = useState<boolean | null>(null)
   const [invoicesLoading, setInvoicesLoading] = useState(false)
   const [invoicesError, setInvoicesError] = useState<string | null>(null)
+
+  const [deleteEmailConfirm, setDeleteEmailConfirm] = useState('')
+  const [deleteExpanded, setDeleteExpanded] = useState(false)
+  const [deletingAccount, setDeletingAccount] = useState(false)
 
   useEffect(() => {
     if (authLoading) return
@@ -168,6 +174,48 @@ export default function Account() {
   async function handleSignOut() {
     await signOut()
     navigate('/', { replace: true })
+  }
+
+  async function handleDeleteAccount() {
+    if (!user) return
+    const email = (user.email || '').trim()
+    if (!email) {
+      toast.error('Missing email — cannot verify.')
+      return
+    }
+    if (deleteEmailConfirm.trim().toLowerCase() !== email.toLowerCase()) {
+      toast.error('Enter your email address exactly as shown above to confirm.')
+      return
+    }
+    setDeletingAccount(true)
+    try {
+      const result = await deleteAccount()
+      if (result.ok) {
+        toast.success(
+          result.authRemoved
+            ? 'Your account has been deleted permanently.'
+            : 'Your saved profile data was removed. Signed out.'
+        )
+        if (!result.authRemoved) {
+          toast(
+            'You may still be able to sign in again with the same provider until the server removes your login (Supabase service role).',
+            { icon: 'ℹ️', duration: 7000 }
+          )
+        }
+      }
+      await signOut()
+      navigate('/', { replace: true })
+    } catch (err) {
+      const m =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
+          : err instanceof Error
+            ? err.message
+            : undefined
+      toast.error(m || 'Could not delete account.')
+    } finally {
+      setDeletingAccount(false)
+    }
   }
 
   if (authLoading || !user) {
@@ -407,6 +455,77 @@ export default function Account() {
           </form>
         </section>
       )}
+
+      <section className="mt-6 rounded-2xl border border-rose-500/25 bg-rose-500/[0.06] p-6">
+        <div className="flex items-start gap-3">
+          <Trash2Icon className="mt-0.5 size-5 shrink-0 text-rose-300/90" aria-hidden />
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg font-semibold text-white">Danger zone</h2>
+            <p className="mt-1 text-sm text-gray-400">
+              Permanently delete your profile from this app, including plan and usage data. Paid subscriptions are
+              cancelled in Stripe first when possible.
+            </p>
+            {!deleteExpanded ? (
+              <button
+                type="button"
+                onClick={() => setDeleteExpanded(true)}
+                className="mt-4 rounded-lg border border-rose-400/35 bg-transparent px-4 py-2 text-sm font-medium text-rose-200 transition hover:bg-rose-500/15"
+              >
+                Delete account…
+              </button>
+            ) : (
+              <div className="mt-5 space-y-4">
+                <p className="text-xs leading-relaxed text-rose-200/85">
+                  This cannot be undone. Type your email{' '}
+                  <span className="font-semibold text-white">{user.email}</span> below, then confirm.
+                </p>
+                <div>
+                  <label
+                    htmlFor="delete-email-confirm"
+                    className="block text-xs font-medium uppercase tracking-wider text-gray-500"
+                  >
+                    Confirm email
+                  </label>
+                  <input
+                    id="delete-email-confirm"
+                    type="email"
+                    autoComplete="off"
+                    value={deleteEmailConfirm}
+                    onChange={(e) => setDeleteEmailConfirm(e.target.value)}
+                    className="mt-2 w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none transition focus:border-rose-400/40"
+                    placeholder={user.email ?? ''}
+                    disabled={deletingAccount}
+                  />
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    disabled={
+                      deletingAccount ||
+                      deleteEmailConfirm.trim().toLowerCase() !== (user.email || '').trim().toLowerCase()
+                    }
+                    onClick={() => void handleDeleteAccount()}
+                    className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {deletingAccount ? 'Deleting…' : 'Delete my account permanently'}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={deletingAccount}
+                    onClick={() => {
+                      setDeleteExpanded(false)
+                      setDeleteEmailConfirm('')
+                    }}
+                    className="text-sm text-gray-400 underline-offset-4 hover:text-white hover:underline"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
     </main>
   )
 }
