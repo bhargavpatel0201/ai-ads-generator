@@ -8,7 +8,7 @@ Generate a publish-ready LinkedIn post **and** a 1200×624 header image from a s
 
 ## Demo
 
-- **Live:** _add your URL after deploy_
+- **Live:** https://aiadsbypatel.online/
 - **Loom walkthrough:** _add link_
 
 ![App screenshot — Generator](docs/screenshot.png)

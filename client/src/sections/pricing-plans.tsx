@@ -190,6 +190,9 @@ export default function PricingPlans({ showHeading = true }: Props) {
     return resolveCurrentPlanId(user, me)
   }, [user, me, authLoading])
 
+  /** Logged-in but `/users/me` not finished — avoid bogus “switch” CTAs on every tier. */
+  const profileLoading = Boolean(user && !authLoading && me === undefined)
+
   async function handlePlanCta(plan: Plan) {
     const q = new URLSearchParams()
     if (plan.id === 'pro' || plan.id === 'premium') q.set('next', '/plans')
@@ -199,6 +202,8 @@ export default function PricingPlans({ showHeading = true }: Props) {
       navigate(`/sign-in${qs}`)
       return
     }
+
+    if (profileLoading) return
 
     if (plan.id === 'free') {
       if (currentPlanId && currentPlanId !== 'free') {
@@ -249,12 +254,17 @@ export default function PricingPlans({ showHeading = true }: Props) {
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-zinc-400 md:text-[15px]">
             Our Pricing Plans are simple, transparent and flexible. Choose the plan that best suits your needs.
           </p>
+          {user && profileLoading && (
+            <p className="mt-3 text-sm text-zinc-500" role="status" aria-live="polite">
+              Checking your current plan…
+            </p>
+          )}
         </div>
       )}
 
       <div className="mx-auto grid w-full max-w-md grid-cols-1 items-stretch gap-6 lg:max-w-6xl lg:grid-cols-3 lg:gap-6">
         {PLANS.map((plan, index) => {
-          const isActive = currentPlanId !== null && currentPlanId === plan.id
+          const isActive = !profileLoading && currentPlanId !== null && currentPlanId === plan.id
           return (
           <motion.article
             key={plan.id}
@@ -311,14 +321,16 @@ export default function PricingPlans({ showHeading = true }: Props) {
                 <button
                   type="button"
                   className="w-full rounded-xl bg-[#5865F2] py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/50 transition hover:bg-[#4752C4] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
-                  disabled={loadingPlan !== null}
+                  disabled={loadingPlan !== null || profileLoading}
                   onClick={() => void handlePlanCta(plan)}
                 >
-                  {loadingPlan === plan.id
-                    ? 'Please wait…'
-                    : plan.id === 'free' && user && currentPlanId && currentPlanId !== 'free'
-                      ? 'Manage billing / cancel'
-                      : 'Switch to this plan'}
+                  {profileLoading
+                    ? 'Loading plan…'
+                    : loadingPlan === plan.id
+                      ? 'Please wait…'
+                      : plan.id === 'free' && user && currentPlanId && currentPlanId !== 'free'
+                        ? 'Manage billing / cancel'
+                        : 'Switch to this plan'}
                 </button>
               ) : (
                 <div className="h-[3.25rem]" aria-hidden />

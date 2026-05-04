@@ -87,4 +87,6 @@ Open the Vite URL (usually `http://localhost:5173`). API default port **5000**; 
 
 ## Deploy notes
 
-Build the client, serve `dist` via Nginx, and **`proxy_pass /api`** to the Node process (PM2). Use HTTPS in production.
+**Option A — VPS:** Build the client, serve `dist` via Nginx, and **`proxy_pass /api`** to the Node process (PM2). Use HTTPS in production.
+
+**Option B — Vercel + Render:** Static SPA on Vercel; Node API on Render (`server/` root, see `render.yaml`). Set **`VITE_API_URL`** on Vercel to `https://<your-service>.onrender.com/api` and **`CLIENT_URL`** on Render to your frontend origin(s), e.g. `https://aiadsbypatel.online`. Course submission copy (manifest, AI write-up, LinkedIn text) lives in [`docs/TIER3-COURSE-SUBMISSION.md`](docs/TIER3-COURSE-SUBMISSION.md).
